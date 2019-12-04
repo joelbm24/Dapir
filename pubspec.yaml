@@ -1,0 +1,7 @@
+name: dapir
+version: 0.0.1
+description: >-
+  dapir stuff
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+dependencies:
