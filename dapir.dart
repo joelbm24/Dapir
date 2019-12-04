@@ -1,6 +1,4 @@
-library dapir;
-
-export 'Dapir.dart';
+part of dapir;
 
 class Dapir {
   String pathName;
