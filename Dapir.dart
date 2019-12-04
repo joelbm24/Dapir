@@ -1,5 +1,7 @@
 library dapir;
 
+export 'Dapir.dart';
+
 class Dapir {
   String pathName;
   String verb;
