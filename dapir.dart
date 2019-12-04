@@ -1,4 +1,4 @@
-part of dapir;
+library dapir;
 
 class Dapir {
   String pathName;
