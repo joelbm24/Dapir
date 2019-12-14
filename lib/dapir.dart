@@ -24,6 +24,11 @@ class Dapir {
   String route({List<String> extras}) {
     Dapir current = this.parent;
     String route = this.pathName;
+    if (route.contains("~") && extras.length > 0) {
+      route = "/" + extras[0];
+      extras.removeAt(0);
+    }
+
     while (current != null) {
       if (current.pathName.contains("~") && extras.length > 0) {
         route = "/" + extras[0] + route;
