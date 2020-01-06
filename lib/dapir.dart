@@ -1,5 +1,7 @@
 library dapir;
 
+part 'dapirRequest.dart';
+
 class Dapir {
   String pathName;
   String verb;
@@ -66,13 +68,12 @@ class Dapir {
     return "?${formated_params.join("&")}";
   }
 
-  Map<String, dynamic> request({List<String> extras, Map<String, String> params, dynamic body = null}) { 
-    Map<String, dynamic> request = {
-      "verb": this.verb,
-      "header": this.headers,
-      "url": this.route(extras: extras) + this.param(params),
-      "body": body == null ? "" : body
-    };
+  DapirRequest request({List<String> extras, Map<String, String> params, dynamic body = null}) { 
+    DapirRequest request = DapirRequest(
+            verb: this.verb,
+            header: this.headers,
+            url: this.route(extras: extras) + this.param(params),
+            body: body == null ? "" : body);
 
     return request;
   }
