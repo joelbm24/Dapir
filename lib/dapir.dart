@@ -73,7 +73,7 @@ class Dapir {
             verb: this.verb,
             header: this.headers,
             url: this.route(extras: extras) + this.param(params),
-            body: body == null ? "" : body);
+            body: body == null ? {} : body);
 
     return request;
   }
