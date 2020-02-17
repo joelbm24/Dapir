@@ -1,5 +1,7 @@
 library dapir;
 
+import "package:http/http.dart" as http;
+
 part 'dapirRequest.dart';
 
 class Dapir {
