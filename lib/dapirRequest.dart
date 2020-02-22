@@ -13,18 +13,18 @@ class DapirRequest {
     this.body = body;
   }
 
-Future<String> makeRequest() async {
-  String request_verb = this.verb;
+  Future<String> makeRequest() async {
+    String request_verb = this.verb;
 
-  Map<String, dynamic> make_request_by_verb = {
-    "GET": getRequest,
-    "POST": postRequest
-  };
+    Map<String, dynamic> make_request_by_verb = {
+      "GET": getRequest,
+      "POST": postRequest
+    };
 
-  return make_request_by_verb[request_verb]();
-}
+    return make_request_by_verb[request_verb]();
+  }
 
-Future<String> getRequest() async {
+  Future<String> getRequest() async {
   var response = await http.get(this.url, headers: this.header);
   return response.body;
 }
