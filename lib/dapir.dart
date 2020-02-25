@@ -56,21 +56,30 @@ class Dapir {
     return output;
   }
 
-  String param(Map<String, String> params) {
+  String param(Map<String, dynamic> params) {
 
     if (params.isEmpty) {
       return "";
     }
 
     List<String> formated_params = [];
-    params.entries.forEach((l) {
-      formated_params.add("${l.key}=${l.value}");
+    params.forEach((k,v) {
+      if (v is List<String>) {
+        v = v.join(",");
+      }
+      formated_params.add("$k=$v");
     });
+    // params.entries.forEach((l) {
+    //   if (l.value is List<String>) {
+    //     l.value = l.value;
+    //   }
+    //   formated_params.add("${l.key}=${l.value}");
+    // });
 
     return "?${formated_params.join("&")}";
   }
 
-  DapirRequest request({List<String> extras, Map<String, String> params, dynamic body = null}) { 
+  DapirRequest request({List<String> extras, Map<String, dynamic> params, dynamic body = null}) { 
     DapirRequest request = DapirRequest(
             verb: this.verb,
             header: this.headers,
