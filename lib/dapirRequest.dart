@@ -25,13 +25,12 @@ class DapirRequest {
   }
 
   Future<String> getRequest() async {
-  var response = await http.get(this.url, headers: this.header);
-  return response.body;
-}
+    var response = await http.get(this.url, headers: this.header);
+    return response.body;
+  }
 
-Future<String> postRequest() async {
-  var response = await http.post(this.url, headers: this.header, body: this.body);
-  return response.body;
-}
-
+  Future<String> postRequest() async {
+    var response = await http.post(this.url, headers: this.header, body: this.body);
+    return response.body;
+  }
 }

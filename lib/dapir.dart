@@ -79,7 +79,7 @@ class Dapir {
     return "?${formated_params.join("&")}";
   }
 
-  DapirRequest request({List<String> extras, Map<String, dynamic> params, dynamic body = null}) { 
+  DapirRequest request({List<String> extras = const [], Map<String, dynamic> params = const {}, dynamic body = null}) { 
     DapirRequest request = DapirRequest(
             verb: this.verb,
             header: this.headers,
