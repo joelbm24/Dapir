@@ -1,27 +1,27 @@
 part of dapir;
 
+enum RequestMethod {
+  GET,    // Read
+  POST,   // Create
+  PUT,    // Replace
+  PATCH,  // Modify
+  DELETE  // Delete
+}
+
 class DapirRequest {
-  String verb;
+  RequestMethod verb;
   Map<String, String> header;
   String url;
   dynamic body;
 
-  DapirRequest({String verb, Map<String, String> header, String url, dynamic body}) {
-    this.verb = verb;
-    this.header = header;
-    this.url = url;
-    this.body = body;
-  }
+  DapirRequest({this.verb, this.header, this.url, this.body}) {}
 
   Future<String> makeRequest() async {
-    String request_verb = this.verb;
-
-    Map<String, dynamic> make_request_by_verb = {
-      "GET": getRequest,
-      "POST": postRequest
-    };
-
-    return make_request_by_verb[request_verb]();
+    switch (this.verb) {
+      case RequestMethod.GET:  return getRequest();
+      case RequestMethod.POST: return postRequest();
+      default:                 return Future.value("Not Implemented");
+    }
   }
 
   Future<String> getRequest() async {

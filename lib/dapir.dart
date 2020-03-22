@@ -1,28 +1,19 @@
 library dapir;
 
+import 'dart:async';
+
 import "package:http/http.dart" as http;
 
 part 'dapirRequest.dart';
 
 class Dapir {
   String pathName;
-  String verb;
+  RequestMethod verb;
   Map<String, String> headers;
   Dapir parent;
 
-  Dapir(String pathName, {
-    String verb = "GET",
-    Map<String, String> headers = null,
-    Dapir parent = null,
-    Map<String, String> params = null}) {
-    this.pathName = pathName;
-    this.parent = parent;
-    this.verb = verb;
-    this.headers = headers;
-
-    if (headers == null) {
-      this.headers = parent.headers;
-    }
+  Dapir(this.pathName, {this.verb = RequestMethod.GET, this.headers, this.parent}) {
+    headers ??= parent?.headers;
   }
 
   String route({List<String> extras}) {
@@ -76,16 +67,14 @@ class Dapir {
     //   formated_params.add("${l.key}=${l.value}");
     // });
 
-    return "?${formated_params.join("&")}";
+    return "?${formated_params.join('&')}";
   }
 
-  DapirRequest request({List<String> extras = const [], Map<String, dynamic> params = const {}, dynamic body = null}) { 
-    DapirRequest request = DapirRequest(
+  DapirRequest request({List<String> extras = const [], Map<String, dynamic> params = const {}, dynamic body}) { 
+    return DapirRequest(
             verb: this.verb,
             header: this.headers,
             url: this.route(extras: extras) + this.param(params),
-            body: body == null ? "" : body);
-
-    return request;
+            body: body ?? "" );
   }
 }
