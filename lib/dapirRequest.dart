@@ -16,21 +16,34 @@ class DapirRequest {
 
   DapirRequest({this.verb, this.header, this.url, this.body}) {}
 
-  Future<String> makeRequest() async {
+  Future<String> requestWithClient(http.Client client) async {
+    http.Response response;
+
     switch (this.verb) {
-      case RequestMethod.GET:  return getRequest();
-      case RequestMethod.POST: return postRequest();
-      default:                 return Future.value("Not Implemented");
+      case RequestMethod.GET:
+        response = await client.get(this.url, headers: this.header);
+        break;
+      case RequestMethod.POST:
+        response = await client.post(this.url, headers: this.header, body: this.body);
+        break;
+      case RequestMethod.PUT:
+        response = await client.put(this.url, headers: this.header, body: this.body);
+        break;
+      case RequestMethod.PATCH:
+        response = await client.patch(this.url, headers: this.header, body: this.body);
+        break;
+      case RequestMethod.DELETE:
+        response = await client.delete(this.url, headers: this.header);
+        break;
     }
-  }
 
-  Future<String> getRequest() async {
-    var response = await http.get(this.url, headers: this.header);
     return response.body;
   }
 
-  Future<String> postRequest() async {
-    var response = await http.post(this.url, headers: this.header, body: this.body);
-    return response.body;
+  Future<String> makeRequest() async {
+    var client = new http.Client();
+    var response = await requestWithClient(client);
+    client.close();
+    return response;
   }
 }

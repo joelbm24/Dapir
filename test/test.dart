@@ -15,11 +15,15 @@ void main() {
   });
 
   test('test complex route', () {
-    Dapir example = new Dapir(base_url, headers: header);
-    Dapir ponyStable = new Dapir("/ponyStable", parent: example);
-    Dapir prettyPony = new Dapir("/prettyPony", parent: ponyStable);
-    DapirRequest prettyPonyRequest = prettyPony.request();
-    expect(prettyPonyRequest.url, equals("https://api.example.com/ponyStable/prettyPony"));
+    var example = new Dapir(base_url, headers: header);
+    var ponyStable = new Dapir("/ponyStable", parent: example);
+    var prettyPony = new Dapir("/prettyPony", parent: ponyStable);
+    DapirRequest request = prettyPony.request();
+    expect(request.url, equals("https://api.example.com/ponyStable/prettyPony"));
+
+    var compoundPath = new Dapir('/ponyStable/prettyPony', parent: example);
+    request = compoundPath.request();
+    expect(request.url, equals("https://api.example.com/ponyStable/prettyPony"));
   });
 
   test('test url substitutions', () {
@@ -29,6 +33,20 @@ void main() {
     DapirRequest food_request = food.request(extras: ["apples"]);
 
     expect(food_request.url, equals("https://api.example.com/ponyFood/apples"));
+  });
+
+  test('test multiple url substitutions', () {
+    var example = new Dapir(base_url, headers: header);
+    var ponies = new Dapir('/ponies', parent: example);
+    var pony = new Dapir("~pony", parent: ponies);
+    var attribute = new Dapir("~attr", parent: pony);
+    DapirRequest request = attribute.request(extras: ["applejack", "height"]);
+    expect(request.url, equals("https://api.example.com/ponies/applejack/height"));
+
+    // TODO: this doesn't work!
+    //var fullPath = new Dapir('/ponies/~pony/~attr', parent: example);
+    //request = fullPath.request(extras: ["pinkiepie", "weight"]);
+    //expect(request.url, equals("https://api.example.com/ponies/pinkiepie/weight"));
   });
 
   test('test url with params', () {

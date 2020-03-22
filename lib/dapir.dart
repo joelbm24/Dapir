@@ -4,6 +4,7 @@ import 'dart:async';
 
 import "package:http/http.dart" as http;
 
+part 'dapirResponse.dart';
 part 'dapirRequest.dart';
 
 class Dapir {
@@ -20,15 +21,16 @@ class Dapir {
     Dapir current = this.parent;
     String route = this.pathName;
     if (route.contains("~") && extras.length > 0) {
-      route = "/" + extras[0];
-      extras.removeAt(0);
+      route = "/" + extras.last;
+      extras.removeLast();
     }
 
     while (current != null) {
       if (current.pathName.contains("~") && extras.length > 0) {
-        route = "/" + extras[0] + route;
-        extras.removeAt(0);
-      } else {
+        route = "/" + extras.last + route;
+        extras.removeLast();
+      }
+      else {
         route = current.pathName + route;
       }
       current = current.parent;
@@ -48,7 +50,6 @@ class Dapir {
   }
 
   String param(Map<String, dynamic> params) {
-
     if (params.isEmpty) {
       return "";
     }
@@ -60,21 +61,15 @@ class Dapir {
       }
       formated_params.add("$k=$v");
     });
-    // params.entries.forEach((l) {
-    //   if (l.value is List<String>) {
-    //     l.value = l.value;
-    //   }
-    //   formated_params.add("${l.key}=${l.value}");
-    // });
 
     return "?${formated_params.join('&')}";
   }
 
-  DapirRequest request({List<String> extras = const [], Map<String, dynamic> params = const {}, dynamic body}) { 
+  DapirRequest request({List<String> extras = const [], Map<String, dynamic> params = const {}, dynamic body = ""}) {
     return DapirRequest(
-            verb: this.verb,
+            verb:   this.verb,
             header: this.headers,
-            url: this.route(extras: extras) + this.param(params),
-            body: body ?? "" );
+            url:    this.route(extras: extras) + this.param(params),
+            body:   body );
   }
 }
