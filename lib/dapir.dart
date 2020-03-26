@@ -17,17 +17,17 @@ class Dapir {
     headers ??= parent?.headers;
   }
 
-  String route({List<String> extras}) {
+  String route({List extras}) {
     Dapir current = this.parent;
     String route = this.pathName;
     if (route.contains("~") && extras.length > 0) {
-      route = "/" + extras.last;
+      route = "/" + extras.last.toString();
       extras.removeLast();
     }
 
     while (current != null) {
       if (current.pathName.contains("~") && extras.length > 0) {
-        route = "/" + extras.last + route;
+        route = "/" + extras.last.toString() + route;
         extras.removeLast();
       }
       else {
@@ -56,7 +56,7 @@ class Dapir {
 
     List<String> formated_params = [];
     params.forEach((k,v) {
-      if (v is List<String>) {
+      if (v is List) {
         v = v.join(",");
       }
       formated_params.add("$k=$v");
@@ -65,7 +65,8 @@ class Dapir {
     return "?${formated_params.join('&')}";
   }
 
-  DapirRequest request({List<String> extras = const [], Map<String, dynamic> params = const {}, dynamic body = ""}) {
+  // TODO: replace extras with a map, where the keys are the url substrings to be replaced
+  DapirRequest request({List extras = const [], Map<String, dynamic> params = const {}, body = ""}) {
     return DapirRequest(
             verb:   this.verb,
             header: this.headers,

@@ -16,7 +16,7 @@ class DapirRequest {
 
   DapirRequest({this.verb, this.header, this.url, this.body}) {}
 
-  Future<String> requestWithClient(http.Client client) async {
+  Future requestWithClient(http.Client client, [Function(String) handler]) async {
     http.Response response;
 
     switch (this.verb) {
@@ -37,12 +37,14 @@ class DapirRequest {
         break;
     }
 
-    return response.body;
+    handler ??= (resp) => resp;
+
+    return handler(response.body);
   }
 
-  Future<String> makeRequest() async {
+  Future<String> makeRequest([Function(String) handler]) async {
     var client = new http.Client();
-    var response = await requestWithClient(client);
+    var response = await requestWithClient(client, handler);
     client.close();
     return response;
   }
