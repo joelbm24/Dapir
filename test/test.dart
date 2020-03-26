@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:test/test.dart';
 import '../lib/dapir.dart';
+import 'placeholderObjects.dart';
 
 void main() {
   String base_url = "https://jsonplaceholder.typicode.com";
@@ -41,27 +43,50 @@ void main() {
       var users = new Dapir('/users', parent: base);
       var user_id = new Dapir("/~id", parent: users);
       var user_attr = new Dapir("/~attr", parent: user_id);
-      DapirRequest request = user_attr.request(substitutions: {"~id": 1, "~attr": "posts"});
-      expect(request.url, equals("${base_url}/users/1/posts"));
+      DapirRequest request = user_attr.request(substitutions: {"~id": 2, "~attr": "posts"});
+      expect(request.url, equals("${base_url}/users/2/posts"));
 
-      var fullPath = new Dapir('/users/~id/~attr', parent: base);
-      request = fullPath.request(substitutions: {"~id": 2, "~attr": "todos"});
-      expect(request.url, equals("${base_url}/users/2/todos"));
+      var full_path = new Dapir('/users/~id/~attr', parent: base);
+      request = full_path.request(substitutions: {"~id": 3, "~attr": "todos"});
+      expect(request.url, equals("${base_url}/users/3/todos"));
     });
 
 
     test('Query parameters', () {
-      Dapir posts = new Dapir("${base_url}/posts", headers: header);
+      var posts = new Dapir("${base_url}/posts", headers: header);
       Map<String, dynamic> params = {
         "userId": 1
       };
 
       DapirRequest posts_request = posts.request(params: params);
-      // TODO:
-      // DapirResponse posts_response = posts_request.makeRequest();
-      // posts_response.getTitle();
-
       expect(posts_request.url, equals("${base_url}/posts?userId=1"));
+    });
+  });
+
+  group('Making Requests', () {
+    test('Simple request', () async {
+      var user = new Dapir("${base_url}/users/10");
+      var request = user.request();
+      var response = await request.makeRequest();
+      expect(response, isNotEmpty);
+      expect(() => jsonDecode(response), returnsNormally);
+    });
+
+    test('With handler', () async {
+      var request = new Dapir("${base_url}/users/10").request();
+      User user = await request.makeRequest((response) => new User.fromJson(response));
+      expect(user.id, equals(10));
+      expect(user.name, isNotEmpty);
+      expect(user.username, isNotEmpty);
+      expect(user.email, isNotEmpty);
+    });
+
+    test('With query', () async {
+      var posts = new Dapir("${base_url}/posts");
+      var filtered_posts = posts.request(params: {"userId": 1});
+      List<Post> post_objects = await filtered_posts.makeRequest((response) => Post.fromJsonArray(response));
+      expect(post_objects, isNotEmpty);
+      expect(post_objects.every((post) => post.user_id == 1), isTrue);
     });
   });
 }
