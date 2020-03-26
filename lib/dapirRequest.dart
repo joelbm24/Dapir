@@ -8,6 +8,8 @@ enum RequestMethod {
   DELETE  // Delete
 }
 
+typedef ResponseHandler = dynamic Function(String);
+
 class DapirRequest {
   RequestMethod verb;
   Map<String, String> header;
@@ -16,7 +18,7 @@ class DapirRequest {
 
   DapirRequest({this.verb, this.header, this.url, this.body}) {}
 
-  Future requestWithClient(http.Client client, [Function(String) handler]) async {
+  Future requestWithClient(http.Client client, [ResponseHandler handler]) async {
     http.Response response;
 
     switch (this.verb) {
@@ -42,8 +44,8 @@ class DapirRequest {
     return handler(response.body);
   }
 
-  Future makeRequest([Function(String) handler]) async {
-    var client = new http.Client();
+  Future makeRequest([ResponseHandler handler]) async {
+    var client = http.Client();
     var response = await requestWithClient(client, handler);
     client.close();
     return response;

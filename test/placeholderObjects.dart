@@ -35,7 +35,7 @@ class Post {
     List array = jsonDecode(raw_json);
     List<Post> posts = [];
     array.forEach((post) {
-      posts.add(new Post(post['id'], post['userId'], post['title'], post['body']));
+      posts.add(Post(post['id'], post['userId'], post['title'], post['body']));
     });
     return posts;
   }
