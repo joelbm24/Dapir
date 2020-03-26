@@ -2,7 +2,7 @@ import 'package:test/test.dart';
 import '../lib/dapir.dart';
 
 void main() {
-  String base_url = "https://jsonplaceholder.typicode.com/";
+  String base_url = "https://jsonplaceholder.typicode.com";
   Map<String, String> header = {
       "Content-Type": "json/application",
   };
@@ -22,7 +22,7 @@ void main() {
       DapirRequest request = post_id.request();
       expect(request.url, equals("${base_url}/posts/1"));
 
-      var compoundPath = new Dapir('/posts/2', parent: base);
+      var compoundPath = new Dapir("/posts/2", parent: base);
       request = compoundPath.request();
       expect(request.url, equals("${base_url}/posts/2"));
     });
@@ -30,8 +30,8 @@ void main() {
 
     test('Single path substitution', () {
       var users = new Dapir("${base_url}/users", headers: header);
-      var user_id = new Dapir("~id", parent: users);
-      DapirRequest user_request = user_id.request(extras: [10]);
+      var user_id = new Dapir("/~id", parent: users);
+      DapirRequest user_request = user_id.request(substitutions: {"~id": 10});
 
       expect(user_request.url, equals("${base_url}/users/10"));
     });
@@ -39,15 +39,14 @@ void main() {
     test('Multiple path substitutions', () {
       var base = new Dapir(base_url, headers: header);
       var users = new Dapir('/users', parent: base);
-      var user_id = new Dapir("~id", parent: users);
-      var user_attr = new Dapir("~attr", parent: user_id);
-      DapirRequest request = user_attr.request(extras: [1, "posts"]);
+      var user_id = new Dapir("/~id", parent: users);
+      var user_attr = new Dapir("/~attr", parent: user_id);
+      DapirRequest request = user_attr.request(substitutions: {"~id": 1, "~attr": "posts"});
       expect(request.url, equals("${base_url}/users/1/posts"));
 
-      // TODO: this doesn't work!
-      //var fullPath = new Dapir('/users/~id/~attr', parent: base);
-      //request = fullPath.request(extras: [2, "todos"]);
-      //expect(request.url, equals("${base_url}/users/2/todos"));
+      var fullPath = new Dapir('/users/~id/~attr', parent: base);
+      request = fullPath.request(substitutions: {"~id": 2, "~attr": "todos"});
+      expect(request.url, equals("${base_url}/users/2/todos"));
     });
 
 
