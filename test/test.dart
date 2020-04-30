@@ -65,7 +65,7 @@ void main() {
       expect(request.url, equals('${base_url}/users/3/todos'));
 
       // Method 4
-      var all_endpoints = Dapir(base_url, headers: header, children: [
+      var root = Dapir(base_url, headers: header, children: [
         Dapir('/users', children: [
           Dapir('/~id', children: [
             Dapir('/~attr')
@@ -73,21 +73,23 @@ void main() {
         ]),
       ]);
 
-      var specific_endpoint = all_endpoints['/users']['/~id']['/~attr'];
-      request = specific_endpoint.request(substitutions: {'~id': 4, '~attr': 'posts'});
+      var endpoint = root / 'users' / '~id' / '~attr';
+      // alternatively:
+      //var endpoint = root['/users']['/~id']['/~attr'];
+      request = endpoint.request(substitutions: {'~id': 4, '~attr': 'posts'});
       expect(request.url, equals('${base_url}/users/4/posts'));
-      expect(specific_endpoint.headers, equals(header));
-      expect(specific_endpoint.parent, equals(all_endpoints['/users']['/~id']));
+      expect(endpoint.headers, equals(header));
+      expect(endpoint.parent, equals(root/'users'/'~id'));
 
       // Method 5
-      var last_endpoint = Dapir(base_url, headers: header)
+      var last_child = Dapir(base_url, headers: header)
         .child('/users')
         .child('/~id')
         .child('/~attr');
 
-      request = last_endpoint.request(substitutions: {'~id': 5, '~attr': 'posts'});
+      request = last_child.request(substitutions: {'~id': 5, '~attr': 'posts'});
       expect(request.url, equals('${base_url}/users/5/posts'));
-      expect(last_endpoint.headers, equals(header));
+      expect(last_child.headers, equals(header));
     });
 
 

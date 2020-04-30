@@ -49,8 +49,10 @@ class Dapir {
     return output;
   }
 
-  /// Access child Dapir nodes by their `pathName`.
+  /// Access Dapir child nodes by its `pathName`.
   Dapir operator [](String path) => _children[path];
+  /// Access Dapir child node by its `pathName`, without the leading '/'.
+  Dapir operator /(String path) => _children['/$path'];
 
   String route({Map<String, dynamic> substitutions = const {}}) {
     var current = this;
