@@ -16,26 +16,26 @@ class DapirRequest {
   String url;
   dynamic body;
 
-  DapirRequest({this.verb, this.header, this.url, this.body}) {}
+  DapirRequest({this.verb, this.header, this.url, this.body});
 
   Future<T> requestWithClient<T>(http.Client client, [ResponseHandler<T> handler]) async {
     http.Response response;
 
-    switch (this.verb) {
+    switch (verb) {
       case RequestMethod.GET:
-        response = await client.get(this.url, headers: this.header);
+        response = await client.get(url, headers: header);
         break;
       case RequestMethod.POST:
-        response = await client.post(this.url, headers: this.header, body: this.body);
+        response = await client.post(url, headers: header, body: body);
         break;
       case RequestMethod.PUT:
-        response = await client.put(this.url, headers: this.header, body: this.body);
+        response = await client.put(url, headers: header, body: body);
         break;
       case RequestMethod.PATCH:
-        response = await client.patch(this.url, headers: this.header, body: this.body);
+        response = await client.patch(url, headers: header, body: body);
         break;
       case RequestMethod.DELETE:
-        response = await client.delete(this.url, headers: this.header);
+        response = await client.delete(url, headers: header);
         break;
     }
 
