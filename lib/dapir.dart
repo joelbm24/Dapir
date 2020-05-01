@@ -13,32 +13,31 @@ class Dapir {
   RequestMethod verb;
   Map<String, String> _headers;
   Dapir parent;
-  final Map<String, Dapir> _children = {};
+  final Map<String, Map<RequestMethod, Dapir>> _children = {};
 
   Dapir(this.pathName, {this.verb = RequestMethod.GET, Map<String,String> headers = const {}, this.parent, Iterable<Dapir> children = const []}) {
     _headers = headers;
     children.forEach(_adopt);
   }
 
-  void _adopt(Dapir child) {
+  Dapir _adopt(Dapir child) {
     child.parent = this;
-    // TODO: Storing children by their path this way will break when 2 children use the same path but different verbs/headers.
-    //       Perhaps store it as '/my-path:VERB' to distinguish them.
-    _children[child.pathName] = child;
+    _children.putIfAbsent(child.pathName, () => {});
+    _children[child.pathName][child.verb] = child;
+    return child;
   }
 
   /// Creates a new Dapir object with the current object as the parent.
-  Dapir child(String pathName, {RequestMethod verb = RequestMethod.GET, Map<String,String> headers = const {}}) {
+  Dapir newChild(String pathName, {RequestMethod verb = RequestMethod.GET, Map<String,String> headers = const {}}) {
     var child = Dapir(pathName, verb: verb, headers: headers);
-    _adopt(child);
-    return child;
+    return _adopt(child);
   }
 
   set headers(Map<String, String> newHeaders) => _headers = newHeaders;
 
   bool get hasParent => parent != null;
   bool get hasChildren => _children.isNotEmpty;
-  Iterable<Dapir> get children => _children.values;
+  Iterable<Dapir> get children => _children.values.expand((map) => map.values);
 
   Map<String, String> get headers =>
     hasParent ? parent.headers.merge(_headers) : _headers;
@@ -49,10 +48,20 @@ class Dapir {
     return output;
   }
 
+  Dapir getChild(String pathName, [RequestMethod verb = RequestMethod.GET]) =>
+    _children[pathName][verb];
+
+  /// Create new child with the given [pathName] as a `GET` endpoint, and the same headers as the parent.
+  Dapir operator +(String pathName) => newChild(pathName);
+
+  /// Turns the right Dapir object into a child of the left Dapir object, and returns the new child.
+  Dapir operator >(Dapir child) => _adopt(child);
+
   /// Access Dapir child nodes by its `pathName`.
-  Dapir operator [](String path) => _children[path];
+  Dapir operator [](String pathName) => getChild(pathName);
+
   /// Access Dapir child node by its `pathName`, without the leading '/'.
-  Dapir operator /(String path) => _children['/$path'];
+  Dapir operator /(String pathName) => getChild('/$pathName');
 
   String route({Map<String, dynamic> substitutions = const {}}) {
     var current = this;

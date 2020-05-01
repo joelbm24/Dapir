@@ -33,14 +33,14 @@ void main() {
 
     test('Single path substitution', () {
       var users = Dapir('${base_url}/users', headers: header);
-      var user_id = Dapir("/~id", parent: users);
-      DapirRequest user_request = user_id.request(substitutions: {"~id": 10});
+      var user_id = Dapir('/~id', parent: users);
+      DapirRequest user_request = user_id.request(substitutions: {'~id': 10});
 
-      expect(user_request.url, equals("${base_url}/users/10"));
+      expect(user_request.url, equals('${base_url}/users/10'));
     });
 
     test('Multiple path substitutions', () {
-      // Method 1
+      // Method 1: Original style.
       var base = Dapir(base_url, headers: header);
       var users = Dapir('/users', parent: base);
       var user_id = Dapir('/~id', parent: users);
@@ -49,22 +49,26 @@ void main() {
       DapirRequest request = user_attr.request(substitutions: {'~id': 1, '~attr': 'posts'});
       expect(request.url, equals('${base_url}/users/1/posts'));
 
-      // Method 2
+      // Method 2: Shorthand for defining new children.
       base = Dapir(base_url, headers: header);
-      users = base.child('/users');
-      user_id = users.child('/~id');
-      user_attr = user_id.child('/~attr');
+      users = base + '/users';
+      user_id = users + '/~id';
+      user_attr = user_id + '/~attr';
+      // Equivalent to
+      //   users = base.newChild('/users');
+      // And
+      //   users = Dapir('/users', parent: base);
 
       request = user_attr.request(substitutions: {'~id': 2, '~attr': 'posts'});
       expect(request.url, equals('${base_url}/users/2/posts'));
 
-      // Method 3
+      // Method 3: Construct compound url path as a single Dapir object.
       // TODO: Split up compound paths to produce multiple children internally, and return the last child.
       var full_path = Dapir('/users/~id/~attr', parent: base);
       request = full_path.request(substitutions: {'~id': 3, '~attr': 'todos'});
       expect(request.url, equals('${base_url}/users/3/todos'));
 
-      // Method 4
+      // Method 4: Flutter-like, Nested Dapir Object Definitions.
       var root = Dapir(base_url, headers: header, children: [
         Dapir('/users', children: [
           Dapir('/~id', children: [
@@ -73,23 +77,33 @@ void main() {
         ]),
       ]);
 
+      // Retreiving nested child objects
       var endpoint = root / 'users' / '~id' / '~attr';
-      // alternatively:
-      //var endpoint = root['/users']['/~id']['/~attr'];
+      // Equivalent to
+      //  var endpoint = root['/users']['/~id']['/~attr'];
+
       request = endpoint.request(substitutions: {'~id': 4, '~attr': 'posts'});
       expect(request.url, equals('${base_url}/users/4/posts'));
       expect(endpoint.headers, equals(header));
       expect(endpoint.parent, equals(root/'users'/'~id'));
 
-      // Method 5
-      var last_child = Dapir(base_url, headers: header)
-        .child('/users')
-        .child('/~id')
-        .child('/~attr');
+      // Method 5: Constructing compound url path as a chain of Dapir objects.
+      var last_child = Dapir(base_url, headers: header) + '/users' + '/~id' + '/~attr';
 
       request = last_child.request(substitutions: {'~id': 5, '~attr': 'posts'});
       expect(request.url, equals('${base_url}/users/5/posts'));
       expect(last_child.headers, equals(header));
+
+      // Method 6: Composing existing Dapir objects.
+      base = Dapir(base_url, headers: header);
+      users = base > Dapir('/users');
+      user_id = users > Dapir('/~id');
+      user_attr = user_id > Dapir('/~attr');
+
+      request = user_attr.request(substitutions: {'~id': 2, '~attr': 'posts'});
+      expect(request.url, equals('${base_url}/users/2/posts'));
+      expect(user_attr.headers, equals(header));
+      expect(user_attr.parent, equals(user_id));
     });
 
 
