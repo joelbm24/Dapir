@@ -48,20 +48,44 @@ class Dapir {
     return output;
   }
 
+  bool isChildOf(Dapir other) {
+    var current = this;
+    while (current.hasParent) {
+      if (current.parent == other) {
+        return true;
+      }
+      else {
+        current = current.parent;
+      }
+    }
+    return false;
+  }
+
+  bool isParentOf(Dapir other) => other.isChildOf(this);
+
   Dapir getChild(String pathName, [RequestMethod verb = RequestMethod.GET]) =>
     _children[pathName][verb];
 
+  /// Shorthand for [newChild].
   /// Create new child with the given [pathName] as a `GET` endpoint, and the same headers as the parent.
   Dapir operator +(String pathName) => newChild(pathName);
 
   /// Turns the right Dapir object into a child of the left Dapir object, and returns the new child.
-  Dapir operator >(Dapir child) => _adopt(child);
+  Dapir operator >>(Dapir child) => _adopt(child);
 
-  /// Access Dapir child nodes by its `pathName`.
+  /// Simplified shorthand for [getChild].
+  /// Access Dapir child node only by its [pathName].
   Dapir operator [](String pathName) => getChild(pathName);
 
-  /// Access Dapir child node by its `pathName`, without the leading '/'.
+  /// Simplified shorthand for [getChild].
+  /// Access Dapir child node only by its [pathName], without the leading '/'.
   Dapir operator /(String pathName) => getChild('/$pathName');
+
+  /// Shorthand for [isParentOf].
+  bool operator >(Dapir other) => isParentOf(other);
+
+  /// Shorthand for [isChildOf].
+  bool operator <(Dapir other) => isChildOf(other);
 
   String route({Map<String, dynamic> substitutions = const {}}) {
     var current = this;
@@ -81,7 +105,7 @@ class Dapir {
 
   DapirRequest request({Map<String, dynamic> substitutions = const {}, Map<String, dynamic> params = const {}, body = ''}) =>
     DapirRequest(verb:   verb,
-                 header: _headers,
+                 header: headers,
                  url:    route(substitutions: substitutions) + _formatParams(params),
                  body:   body);
 

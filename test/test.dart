@@ -48,6 +48,8 @@ void main() {
 
       DapirRequest request = user_attr.request(substitutions: {'~id': 1, '~attr': 'posts'});
       expect(request.url, equals('${base_url}/users/1/posts'));
+      expect(user_id.isParentOf(user_attr), isTrue);
+      expect(user_attr.isChildOf(user_id), isTrue);
 
       // Method 2: Shorthand for defining new children.
       base = Dapir(base_url, headers: header);
@@ -61,6 +63,12 @@ void main() {
 
       request = user_attr.request(substitutions: {'~id': 2, '~attr': 'posts'});
       expect(request.url, equals('${base_url}/users/2/posts'));
+      expect(user_attr.headers, equals(header));
+      expect(user_id > user_attr, isTrue);
+      expect(user_attr < user_id, isTrue);
+      // Equivalent to
+      //   expect(user_id.isParentOf(user_attr));
+      //   expect(user_attr.isChildOf(user_id));
 
       // Method 3: Construct compound url path as a single Dapir object.
       // TODO: Split up compound paths to produce multiple children internally, and return the last child.
@@ -85,7 +93,8 @@ void main() {
       request = endpoint.request(substitutions: {'~id': 4, '~attr': 'posts'});
       expect(request.url, equals('${base_url}/users/4/posts'));
       expect(endpoint.headers, equals(header));
-      expect(endpoint.parent, equals(root/'users'/'~id'));
+      expect(endpoint.parent, equals(root['/users']['/~id']));
+      expect(endpoint < root/'users'/'~id', isTrue);
 
       // Method 5: Constructing compound url path as a chain of Dapir objects.
       var last_child = Dapir(base_url, headers: header) + '/users' + '/~id' + '/~attr';
@@ -96,14 +105,14 @@ void main() {
 
       // Method 6: Composing existing Dapir objects.
       base = Dapir(base_url, headers: header);
-      users = base > Dapir('/users');
-      user_id = users > Dapir('/~id');
-      user_attr = user_id > Dapir('/~attr');
+      users = base >> Dapir('/users');
+      user_id = users >> Dapir('/~id');
+      user_attr = user_id >> Dapir('/~attr');
 
       request = user_attr.request(substitutions: {'~id': 2, '~attr': 'posts'});
       expect(request.url, equals('${base_url}/users/2/posts'));
       expect(user_attr.headers, equals(header));
-      expect(user_attr.parent, equals(user_id));
+      expect(user_attr < user_id, isTrue);
     });
 
 
