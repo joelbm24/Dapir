@@ -4,8 +4,8 @@ Dapir is a library for writing REST clients in Dart. It allows you to easily bui
  ---
 
  ## Authors
-Joel Buchheim-Moore => joelbm24@gmail.com
-Enrique Gavidia => oblique63@gmail.com
+* Joel Buchheim-Moore => joelbm24@gmail.com
+* Enrique Gavidia => oblique63@gmail.com
 
  ---
 
