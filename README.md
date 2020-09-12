@@ -7,7 +7,16 @@ Dapir is a library for writing REST clients in Dart. It allows you to easily bui
 * Joel Buchheim-Moore => joelbm24@gmail.com
 * Enrique Gavidia => oblique63@gmail.com
 
+<br />
+
+## Buy me a coffee
+If you use this or just want to help out a fellow developer please consider buying me a coffee.
+
+<a href="https://www.buymeacoffee.com/onemorejoel" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/arial-blue.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
  ---
+
+<br />
 
 ## Installation
 Just include these lines in your `pubspec.yaml` file.
