@@ -10,7 +10,7 @@ Dapir is a library for writing REST clients in Dart. It allows you to easily bui
 ## Buy me a coffee
 If you use this or just want to help out a fellow developer please consider buying me a coffee.
 
-<a href="https://www.buymeacoffee.com/onemorejoel" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/arial-blue.png" alt="Buy Me A Coffee" style="height: 30px !important;width: 108px !important;" ></a>
+<a href="https://www.buymeacoffee.com/onemorejoel" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/arial-blue.png" alt="Buy Me A Coffee" style="height: 30px !important;width: 150px !important;" width="150px" ></a>
 
  ---
 
